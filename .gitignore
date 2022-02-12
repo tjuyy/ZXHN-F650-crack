@@ -127,3 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+db_user_cfg_cracked.xml
+db_user_cfg.xml
